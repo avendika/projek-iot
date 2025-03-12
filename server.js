@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Koneksi ke EMQX
-const mqttClient = mqtt.connect("mqtt://broker.emqx.io");
+const mqttClient = mqtt.connect("wss://broker.emqx.io:8084/mqtt"); 
 
 let sensorData = { 
     suhu: 0, 
