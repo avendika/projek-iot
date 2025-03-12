@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart AC Controller</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3046c5;
+            --primary-light: #eef2ff;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1f2937;
+            --gray-light: #f9fafb;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8fafc, #e0e7ff);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .dashboard {
+            max-width: 500px;
+            width: 100%;
+            background-color: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin: 16px;
+        }
+        
+        .dashboard-header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .dashboard-title {
+            font-weight: 600;
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        
+        .dashboard-content {
+            padding: 0;
+        }
+        
+        .temp-module {
+            padding: 24px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .temp-display-wrap {
+            text-align: center;
+        }
+        
+        .temp-display {
+            font-size: 4rem;
+            font-weight: 300;
+            color: var(--dark);
+            position: relative;
+            line-height: 1;
+        }
+        
+        .temp-unit {
+            font-size: 1.5rem;
+            position: absolute;
+            top: 10px;
+            right: -25px;
+            opacity: 0.5;
+        }
+        
+        .temp-label {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-top: 8px;
+        }
+        
+        .temp-controls {
+            display: flex;
+            gap: 16px;
+        }
+        
+        .temp-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .temp-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .temp-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .temp-btn.minus {
+            background: var(--danger);
+        }
+        
+        .temp-btn.plus {
+            background: var(--success);
+        }
+        
+        .power-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .power-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .power-description {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        
+        .power-btn {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .power-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .power-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .power-on {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        
+        .power-off {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+        
+        .sensor-grid {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        
+        .sensor-item {
+            background: var(--gray-light);
+            border-radius: 14px;
+            padding: 16px 12px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        
+        .sensor-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        
+        .sensor-icon {
+            margin-bottom: 10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin: 0 auto 12px;
+        }
+        
+        .sensor-temp .sensor-icon {
+            background-color: rgba(99, 102, 241, 0.15);
+            color: #4f46e5;
+        }
+        
+        .sensor-fire .sensor-icon {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #dc2626;
+        }
+        
+        .sensor-gas .sensor-icon {
+            background-color: rgba(245, 158, 11, 0.15);
+            color: #d97706;
+        }
+        
+        .sensor-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+        
+        .sensor-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .action-section {
+            padding: 0 20px 20px;
+            display: flex;
+        }
+        
+        .btn-apply {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            color: white;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-apply:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn-apply:active {
+            transform: translateY(0);
+        }
+        
+        .btn-apply i {
+            margin-right: 8px;
+        }
+        
+        .status-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: inline-flex;
+            align-items: center;
+            padding: 0.4rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .status-badge i {
+            margin-right: 6px;
+        }
+        
+        .success-alert {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            padding: 14px 20px;
+            border-radius: 12px;
+            background: white;
+            color: var(--dark);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            min-width: 300px;
+            max-width: 90%;
+        }
+        
+        .success-alert.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        .alert-icon {
+            margin-right: 14px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+        
+        .alert-success .alert-icon {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #059669;
+        }
+        
+        .alert-error .alert-icon {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #dc2626;
+        }
+        
+        .alert-content {
+            flex: 1;
+        }
+        
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 2px;
+            font-size: 0.9rem;
+        }
+        
+        .alert-message {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Smart AC Controller</h1>
+            <span id="acStatusBadge" class="status-badge">
+                <i class="fas fa-circle"></i>OFF
+            </span>
+        </div>
+        
+        <div class="dashboard-content">
+            <!-- Temperature Module -->
+            <div class="temp-module">
+                <div class="temp-display-wrap">
+                    <div class="temp-display" id="acTemperature">
+                        25<span class="temp-unit">°C</span>
+                    </div>
+                    <div class="temp-label">Set Temperature</div>
+                </div>
+                
+                <div class="temp-controls">
+                    <button class="temp-btn minus" onclick="adjustTemp(-1)">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button class="temp-btn plus" onclick="adjustTemp(1)">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Power Section -->
+            <div class="power-section">
+                <div>
+                    <div class="power-label">Power Control</div>
+                    <div class="power-description">Turn AC on/off</div>
+                </div>
+                
+                <div id="powerBtn" class="power-btn power-off" onclick="togglePower()">
+                    <i class="fas fa-power-off"></i>
+                </div>
+            </div>
+            
+            <!-- Sensor Readings -->
+            <div class="sensor-grid">
+                <div class="sensor-item sensor-temp">
+                    <div class="sensor-icon">
+                        <i class="fas fa-thermometer-half"></i>
+                    </div>
+                    <div class="sensor-label">Suhu Ruangan</div>
+                    <div id="roomTemp" class="sensor-value">--°C</div>
+                </div>
+                
+                <div class="sensor-item sensor-fire">
+                    <div class="sensor-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="sensor-label">Status Api</div>
+                    <div id="fireStatus" class="sensor-value">--</div>
+                </div>
+                
+                <div class="sensor-item sensor-gas">
+                    <div class="sensor-icon">
+                        <i class="fas fa-wind"></i>
+                    </div>
+                    <div class="sensor-label">Level Gas</div>
+                    <div id="gasLevel" class="sensor-value">--</div>
+                </div>
+            </div>
+            
+            <!-- Apply Button -->
+            <div class="action-section">
+                <button class="btn-apply" onclick="applySettings()">
+                    <i class="fas fa-check-circle"></i>Terapkan Pengaturan
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="successAlert" class="success-alert">
+        <div class="alert-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="alert-content">
+            <div class="alert-title">Success</div>
+            <div id="alertMessage" class="alert-message"></div>
+        </div>
+    </div>
+
+    <script>
+let currentTemp = 25;
+let isPowerOn = false;
+let sensorData = {};
+let lastActionStatus = null;
+let lastUpdateTimestamp = 0;
+
+// Load initial data
+fetchSensorData();
+
+// Setup interval to fetch data regularly
+setInterval(fetchSensorData, 3000);
+
+async function fetchSensorData() {
+    try {
+        const response = await fetch("http://localhost:3000/api/sensor");
+        sensorData = await response.json();
+        
+        // Update UI with sensor data
+        document.getElementById("roomTemp").innerText = `${sensorData.suhu.toFixed(1)}°C`;
+
+        // Update fire status with styling
+        const fireStatusEl = document.getElementById("fireStatus");
+        fireStatusEl.innerText = sensorData.api === 0 ? "Terdeteksi !!!" : "Normal";
+        if (sensorData.api === 0) {
+            fireStatusEl.style.color = "#e74c3c";
+            fireStatusEl.style.fontWeight = "bold";
+        } else {
+            fireStatusEl.style.color = "#10b981";
+            fireStatusEl.style.fontWeight = "normal";
+        }
+        
+        // Update gas level with styling
+        const gasLevelEl = document.getElementById("gasLevel");
+        gasLevelEl.innerText = sensorData.gas;
+        if (sensorData.gas > 540) {
+            gasLevelEl.style.color = "#e74c3c";
+            gasLevelEl.style.fontWeight = "bold";
+        } else {
+            gasLevelEl.style.color = "#10b981";
+            gasLevelEl.style.fontWeight = "normal";
+        }
+        
+        // Update AC status from sensor data if it's newer than our last update
+        if (!lastUpdateTimestamp || (sensorData.last_ir_send && sensorData.last_ir_send > lastUpdateTimestamp)) {
+            isPowerOn = sensorData.ac_power === "on";
+            currentTemp = sensorData.ac_temp || 25;
+            lastUpdateTimestamp = sensorData.last_ir_send || Date.now();
+            
+            console.log("AC status updated from sensor: Power:", isPowerOn, "Temp:", currentTemp);
+            updateACDisplay();
+        }
+    } catch (error) {
+        console.error("Error fetching sensor data:", error);
+    }
+}
+
+function updateACDisplay() {
+    // Update temperature display (just the number, not the unit)
+    document.getElementById("acTemperature").innerHTML = `${currentTemp}<span class="temp-unit">°C</span>`;
+    
+    // Update power status
+    const powerBtn = document.getElementById("powerBtn");
+    const statusBadge = document.getElementById("acStatusBadge");
+    
+    if (isPowerOn) {
+        powerBtn.classList.remove("power-off");
+        powerBtn.classList.add("power-on");
+        statusBadge.innerHTML = '<i class="fas fa-circle"></i>ON';
+        statusBadge.style.backgroundColor = "rgba(16, 185, 129, 0.3)";
+    } else {
+        powerBtn.classList.remove("power-on");
+        powerBtn.classList.add("power-off");
+        statusBadge.innerHTML = '<i class="fas fa-circle"></i>OFF';
+        statusBadge.style.backgroundColor = "rgba(239, 68, 68, 0.3)";
+    }
+}
+
+function togglePower() {
+    isPowerOn = !isPowerOn;
+    updateACDisplay();
+    
+    // Terapkan pengaturan segera saat tombol power diklik
+    applySettings(true);
+}
+
+function adjustTemp(change) {
+    // Simpan nilai lama untuk mendeteksi perubahan
+    const oldTemp = currentTemp;
+    
+    currentTemp += change;
+    // Batasi rentang suhu
+    if (currentTemp < 16) currentTemp = 16;
+    if (currentTemp > 30) currentTemp = 30;
+    
+    // Perbarui tampilan
+    document.getElementById("acTemperature").innerHTML = `${currentTemp}<span class="temp-unit">°C</span>`;
+    
+    // Jika nilai berubah dan AC menyala, terapkan pengaturan secara otomatis
+    if (oldTemp !== currentTemp && isPowerOn) {
+        // Terapkan pengaturan dengan delay 500ms untuk mencegah terlalu banyak permintaan
+        clearTimeout(window.tempChangeTimeout);
+        window.tempChangeTimeout = setTimeout(() => {
+            applySettings(false);
+        }, 500);
+    }
+}
+
+async function applySettings(isFromPowerButton = false) {
+    try {
+        // Catat waktu untuk membantu melacak perubahan
+        lastUpdateTimestamp = Date.now();
+        
+        // Tampilkan indikator sedang mengirim
+        showAlert("Mengirim perintah ke AC...", "Mohon tunggu sebentar");
+        
+        const response = await fetch("http://localhost:3000/api/ac", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                power: isPowerOn ? "on" : "off",
+                temp: currentTemp
+            })
+        });
+        
+        const result = await response.json();
+        
+        // Tampilkan pesan sukses
+        const message = isPowerOn 
+            ? `Suhu diatur ke ${currentTemp}°C` 
+            : "Pengaturan telah disimpan";
+            
+        const title = isPowerOn 
+            ? "AC Dinyalakan" 
+            : "AC Dimatikan";
+            
+        showAlert(message, title, false);
+        
+        console.log("Respons dari server:", result);
+        
+        // Update data dari respons jika ada
+        if (result.status) {
+            sensorData = result.status;
+        }
+        
+        // Log khusus jika dari tombol power
+        if (isFromPowerButton) {
+            console.log(`AC ${isPowerOn ? 'DINYALAKAN' : 'DIMATIKAN'} via tombol Power`);
+        } else {
+            console.log(`Suhu AC diubah ke ${currentTemp}°C`);
+        }
+    } catch (error) {
+        console.error("Error applying settings:", error);
+        showAlert("Periksa koneksi jaringan Anda", "Gagal Terhubung", true);
+    }
+}
+
+function showAlert(message, title = "Success", isError = false) {
+    const alert = document.getElementById("successAlert");
+    const alertMessage = document.getElementById("alertMessage");
+    const alertTitle = alert.querySelector(".alert-title");
+    const alertIcon = alert.querySelector(".alert-icon i");
+    
+    alertMessage.innerText = message;
+    alertTitle.innerText = title;
+    
+    // Ubah kelas alert berdasarkan status
+    if (isError) {
+        alert.className = "success-alert alert-error";
+        alertIcon.className = "fas fa-exclamation-circle";
+    } else {
+        alert.className = "success-alert alert-success";
+        alertIcon.className = "fas fa-check-circle";
+    }
+    
+    alert.classList.add("show");
+    
+    // Hapus notifikasi setelah beberapa waktu
+    setTimeout(() => {
+        alert.classList.remove("show");
+    }, 3000);
+}
+    </script>
+</body>
+</html>
